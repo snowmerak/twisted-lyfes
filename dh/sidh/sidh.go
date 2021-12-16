@@ -30,6 +30,14 @@ func NewKeyPair() (dh.DH, error) {
 	}, nil
 }
 
+func NewKem() (dh.DH, error) {
+	return &KeyPair{
+		priv: nil,
+		pub:  nil,
+		kem:  sidh.NewSike751(rand.Reader),
+	}, nil
+}
+
 func (k *KeyPair) ExportPrivate() []byte {
 	bs := make([]byte, k.priv.Size())
 	k.priv.Export(bs)
@@ -75,12 +83,8 @@ func (k *KeyPair) Encapsulate(publicKey []byte) (ct []byte, ss []byte, err error
 	return ct, ss, nil
 }
 
-func (k *KeyPair) Decapsulate(cipherText, publicKey []byte) (ss []byte, err error) {
+func (k *KeyPair) Decapsulate(cipherText []byte) (ss []byte, err error) {
 	ss = make([]byte, k.kem.SharedSecretSize())
-	other := sidh.NewPublicKey(sidh.Fp751, sidh.KeyVariantSike)
-	if err := other.Import(publicKey); err != nil {
-		return nil, err
-	}
 	if err := k.kem.Decapsulate(ss, k.priv, k.pub, cipherText); err != nil {
 		return nil, err
 	}

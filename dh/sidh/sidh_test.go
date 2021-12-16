@@ -8,7 +8,7 @@ import (
 )
 
 func TestKeyExchangeA(t *testing.T) {
-	a, err := sidh.NewKeyPair()
+	a, err := sidh.NewKem()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -20,7 +20,7 @@ func TestKeyExchangeA(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	ssB, err := b.Decapsulate(ctA, a.ExportPublic())
+	ssB, err := b.Decapsulate(ctA)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -35,7 +35,7 @@ func TestKeyExchangeB(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	b, err := sidh.NewKeyPair()
+	b, err := sidh.NewKem()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -43,7 +43,7 @@ func TestKeyExchangeB(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	ssA, err := a.Decapsulate(ctB, b.ExportPublic())
+	ssA, err := a.Decapsulate(ctB)
 	if err != nil {
 		t.Fatal(err)
 	}
