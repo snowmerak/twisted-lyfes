@@ -30,6 +30,14 @@ func NewKeyPair() (dh.DH, error) {
 	}, nil
 }
 
+func NewNotGeneratedKeyPair() (dh.DH, error) {
+	return &KeyPair{
+		priv: sidh.NewPrivateKey(sidh.Fp751, sidh.KeyVariantSike),
+		pub:  sidh.NewPublicKey(sidh.Fp751, sidh.KeyVariantSike),
+		kem:  sidh.NewSike751(rand.Reader),
+	}, nil
+}
+
 func NewKem() (dh.DH, error) {
 	return &KeyPair{
 		priv: nil,
