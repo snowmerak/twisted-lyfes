@@ -2,6 +2,7 @@ package nats
 
 import (
 	nats "github.com/nats-io/nats.go"
+	"github.com/snowmerak/twisted-lyfes/mq"
 )
 
 type Connection struct {
@@ -9,7 +10,7 @@ type Connection struct {
 	subs map[string]*nats.Subscription
 }
 
-func Connect(url string) (*Connection, error) {
+func Connect(url string) (mq.MQ, error) {
 	nc, err := nats.Connect(url)
 	if err != nil {
 		return nil, err
