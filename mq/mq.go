@@ -1,3 +1,9 @@
 package mq
 
-const CertificateLogTopic = "certificate-log"
+type MQ interface {
+	Publish(subject string, data []byte) error
+	Subscribe(subject string, channel chan<- []byte) error
+	SetReply(subject string, handler func([]byte) []byte) error
+	Unsubscribe(subject string) error
+	Disconnect() error
+}
