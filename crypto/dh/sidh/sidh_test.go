@@ -8,11 +8,11 @@ import (
 )
 
 func TestKeyExchangeA(t *testing.T) {
-	a, err := sidh.NewKem()
+	a, err := sidh.NewKem(sidh.Fp751)
 	if err != nil {
 		t.Fatal(err)
 	}
-	b, err := sidh.NewKeyPair()
+	b, err := sidh.NewKeyPair(sidh.Fp751)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -31,11 +31,11 @@ func TestKeyExchangeA(t *testing.T) {
 }
 
 func TestKeyExchangeB(t *testing.T) {
-	a, err := sidh.NewKeyPair()
+	a, err := sidh.NewKeyPair(sidh.Fp503)
 	if err != nil {
 		t.Fatal(err)
 	}
-	b, err := sidh.NewKem()
+	b, err := sidh.NewKem(sidh.Fp503)
 	if err != nil {
 		t.Fatal(err)
 	}
