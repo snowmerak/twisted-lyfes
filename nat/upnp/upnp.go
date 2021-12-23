@@ -5,7 +5,7 @@ import (
 	"errors"
 	"log"
 
-	"github.com/twisted-lyfes/utility/net/port"
+	"github.com/snowmerak/twisted-lyfes/net/port"
 	"gitlab.com/NebulousLabs/go-upnp"
 )
 

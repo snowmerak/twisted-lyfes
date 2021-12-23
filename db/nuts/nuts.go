@@ -1,7 +1,6 @@
 package db
 
 import (
-	"github.com/twisted-lyfes/certificate-log/model"
 	"github.com/xujiajun/nutsdb"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -43,20 +42,19 @@ func (db *DB) PutWithExpire(subject string, ttl int64, timestamp int64, key stri
 	})
 }
 
-func (db *DB) Get(subject string, key string) (protoreflect.ProtoMessage, error) {
-	var value []byte = nil
+func (db *DB) Get(subject string, key string, value protoreflect.ProtoMessage) (protoreflect.ProtoMessage, error) {
+	var data []byte = nil
 	err := db.db.View(func(tx *nutsdb.Tx) error {
 		entry, err := tx.Get(subject, []byte(key))
 		if err != nil {
 			return err
 		}
-		value = entry.Value
+		data = entry.Value
 		return nil
 	})
 	if err != nil {
 		return nil, err
 	}
-	data := new(model.CertificateLog)
-	proto.Unmarshal(value, data)
-	return data, nil
+	proto.Unmarshal(data, value)
+	return value, nil
 }

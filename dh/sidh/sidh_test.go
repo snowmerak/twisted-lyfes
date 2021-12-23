@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/twisted-lyfes/utility/dh/sidh"
+	"github.com/snowmerak/twisted-lyfes/dh/sidh"
 )
 
 func TestKeyExchangeA(t *testing.T) {

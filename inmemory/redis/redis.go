@@ -2,8 +2,9 @@ package redis
 
 import (
 	"context"
-	"sessions/inmemory"
 	"strconv"
+
+	"github.com/snowmerak/twisted-lyfes/inmemory"
 
 	"github.com/go-redis/redis/v8"
 )

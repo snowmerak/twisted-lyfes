@@ -1,7 +1,7 @@
 package nats
 
 import (
-	"github.com/nats-io/nats.go"
+	nats "github.com/nats-io/nats.go"
 )
 
 type Connection struct {

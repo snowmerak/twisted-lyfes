@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/cloudflare/circl/dh/sidh"
-	"github.com/twisted-lyfes/utility/dh"
+	"github.com/snowmerak/twisted-lyfes/dh"
 )
 
 type KeyPair struct {
