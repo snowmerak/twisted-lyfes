@@ -4,7 +4,7 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/snowmerak/twisted-lyfes/inmemory"
+	"github.com/snowmerak/twisted-lyfes/db/external"
 
 	"github.com/go-redis/redis/v8"
 )
@@ -14,7 +14,7 @@ type RedisDB struct {
 	ctx context.Context
 }
 
-func Connect(url string, port int, password string) inmemory.InMemoryDB {
+func Connect(url string, port int, password string) external.KVCache {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     url + ":" + strconv.Itoa(port),
 		Password: "",
