@@ -5,6 +5,6 @@ type DH interface {
 	ExportPublic() []byte
 	ImportPrivate([]byte) error
 	ImportPublic([]byte) error
-	Encapsulate([]byte) (cipherText []byte, Secret []byte, err error)
+	Encapsulate([]byte) (cipherText []byte, secret []byte, err error)
 	Decapsulate([]byte) (Secret []byte, err error)
 }
