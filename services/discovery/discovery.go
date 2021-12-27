@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"strconv"
 	"time"
 
 	"github.com/snowmerak/twisted-lyfes/net/ip"
@@ -30,7 +31,7 @@ func Do(setting *Setting) ([]string, error) {
 		setting = &Setting{
 			Port:      port.PORT + 1,
 			Limit:     3,
-			LimitTime: time.Millisecond * 10,
+			LimitTime: time.Millisecond * 20,
 		}
 	}
 
@@ -50,6 +51,9 @@ func Do(setting *Setting) ([]string, error) {
 
 		for {
 			func() {
+				if i.Equal(f) {
+					return
+				}
 				b, err := ScanPort(f, setting.Port, setting.LimitTime)
 				if err != nil {
 					log.Println(err)
@@ -72,4 +76,20 @@ func Do(setting *Setting) ([]string, error) {
 	}
 
 	return addresses, nil
+}
+
+func Listen(setting *Setting) error {
+	tcp, err := net.Listen("tcp", ":"+strconv.Itoa(setting.Port+1))
+	if err != nil {
+		return fmt.Errorf("discovery.Listen: %w", err)
+	}
+
+	for {
+		conn, err := tcp.Accept()
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		conn.Close()
+	}
 }
