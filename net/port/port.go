@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-const PORT = "14319"
+const PORT = 14319
 
 const MIN = uint16(9999)
 const MAX = uint16(65535)
