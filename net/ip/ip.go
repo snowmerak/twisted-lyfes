@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func GetBitFrom(ip *net.IP) (uint32, error) {
+func GetBitFrom(ip net.IP) (uint32, error) {
 	if ip == nil {
 		return 0, fmt.Errorf("ip.GetBitFrom: ip is nil")
 	}
@@ -23,7 +23,7 @@ func GetBitFrom(ip *net.IP) (uint32, error) {
 	return ipm, nil
 }
 
-func GetMaskBitFrom(ip *net.IP) uint32 {
+func GetMaskBitFrom(ip net.IP) uint32 {
 	maskBitSize, _ := ip.DefaultMask().Size()
 	maskBit := uint32(0)
 	for i := 0; i < maskBitSize; i++ {
@@ -32,7 +32,7 @@ func GetMaskBitFrom(ip *net.IP) uint32 {
 	return maskBit
 }
 
-func GetFirstIP(ip *net.IP) (*net.IP, error) {
+func GetFirstIP(ip net.IP) (net.IP, error) {
 	if ip == nil {
 		return nil, fmt.Errorf("ip.GetFirstIp: ip is nil")
 	}
@@ -43,11 +43,11 @@ func GetFirstIP(ip *net.IP) (*net.IP, error) {
 	maskBit := GetMaskBitFrom(ip)
 	ipm &= maskBit
 	p := net.IPv4(byte(ipm>>24), byte(ipm>>16), byte(ipm>>8), byte(ipm))
-	n, err := GetNextIP(&p)
+	n, err := GetNextIP(p)
 	return n, nil
 }
 
-func GetNextIP(ip *net.IP) (*net.IP, error) {
+func GetNextIP(ip net.IP) (net.IP, error) {
 	ipm, err := GetBitFrom(ip)
 	if err != nil {
 		return nil, fmt.Errorf("ip.GetNextIP: %w", err)
@@ -58,11 +58,11 @@ func GetNextIP(ip *net.IP) (*net.IP, error) {
 		return nil, fmt.Errorf("ip.GetNextIP: no next ip")
 	}
 	p := net.IPv4(byte(ipm>>24), byte(ipm>>16), byte(ipm>>8), byte(ipm))
-	return &p, nil
+	return p, nil
 }
 
-func GetLocalIPs() ([]*net.IP, error) {
-	ips := []*net.IP{}
+func GetLocalIPs() ([]net.IP, error) {
+	ips := []net.IP{}
 	ifaces, err := net.Interfaces()
 	if err != nil {
 		return nil, fmt.Errorf("ip.GetLocalIPs: %w", err)
@@ -78,7 +78,7 @@ func GetLocalIPs() ([]*net.IP, error) {
 				return nil, fmt.Errorf("ip.GetLocalIPs: %w", err)
 			}
 			if ip.To4() != nil && !ip.IsLoopback() {
-				ips = append(ips, &ip)
+				ips = append(ips, ip)
 			}
 		}
 	}
