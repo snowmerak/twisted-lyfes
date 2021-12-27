@@ -32,6 +32,21 @@ func GetMaskBitFrom(ip *net.IP) uint32 {
 	return maskBit
 }
 
+func GetFirstIP(ip *net.IP) (*net.IP, error) {
+	if ip == nil {
+		return nil, fmt.Errorf("ip.GetFirstIp: ip is nil")
+	}
+	ipm, err := GetBitFrom(ip)
+	if err != nil {
+		return nil, fmt.Errorf("ip.GetFirstIp: %w", err)
+	}
+	maskBit := GetMaskBitFrom(ip)
+	ipm &= maskBit
+	p := net.IPv4(byte(ipm>>24), byte(ipm>>16), byte(ipm>>8), byte(ipm))
+	n, err := GetNextIP(&p)
+	return n, nil
+}
+
 func GetNextIP(ip *net.IP) (*net.IP, error) {
 	ipm, err := GetBitFrom(ip)
 	if err != nil {
