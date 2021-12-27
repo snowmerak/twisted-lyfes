@@ -43,8 +43,7 @@ func GetFirstIP(ip *net.IP) (*net.IP, error) {
 	maskBit := GetMaskBitFrom(ip)
 	ipm &= maskBit
 	p := net.IPv4(byte(ipm>>24), byte(ipm>>16), byte(ipm>>8), byte(ipm))
-	n, err := GetNextIP(&p)
-	return n, nil
+	return &p, nil
 }
 
 func GetNextIP(ip *net.IP) (*net.IP, error) {
