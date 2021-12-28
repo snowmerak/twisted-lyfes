@@ -26,7 +26,12 @@ func ScanPort(ip net.IP, port int, limit time.Duration) (bool, error) {
 	return true, nil
 }
 
-func Do(setting *Setting) ([]string, error) {
+type Pair struct {
+	Local  net.IP
+	Remote net.IP
+}
+
+func Do(setting *Setting) ([]Pair, error) {
 	if setting == nil {
 		setting = &Setting{
 			Port:      port.PORT + 1,
@@ -40,12 +45,11 @@ func Do(setting *Setting) ([]string, error) {
 		return nil, err
 	}
 
-	addresses := make([]string, 0)
+	addresses := make([]Pair, 0)
 
 	for _, i := range localIPs {
 		f, err := ip.GetFirstIP(i)
 		if err != nil {
-			log.Println(err)
 			continue
 		}
 
@@ -56,11 +60,13 @@ func Do(setting *Setting) ([]string, error) {
 				}
 				b, err := ScanPort(f, setting.Port, setting.LimitTime)
 				if err != nil {
-					log.Println(err)
 					return
 				}
 				if b {
-					addresses = append(addresses, f.String())
+					addresses = append(addresses, Pair{
+						Local:  i,
+						Remote: f,
+					})
 				}
 			}()
 			if len(addresses) >= setting.Limit {
@@ -68,7 +74,6 @@ func Do(setting *Setting) ([]string, error) {
 			}
 			n, err := ip.GetNextIP(f)
 			if err != nil {
-				log.Println(err)
 				break
 			}
 			f = n
@@ -79,7 +84,13 @@ func Do(setting *Setting) ([]string, error) {
 }
 
 func Listen(setting *Setting) error {
-	tcp, err := net.Listen("tcp", ":"+strconv.Itoa(setting.Port+1))
+	if setting == nil {
+		setting = &Setting{
+			Port: port.PORT + 1,
+		}
+	}
+
+	tcp, err := net.Listen("tcp", ":"+strconv.Itoa(setting.Port))
 	if err != nil {
 		return fmt.Errorf("discovery.Listen: %w", err)
 	}
