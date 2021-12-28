@@ -2,55 +2,50 @@ package upnp
 
 import (
 	"context"
-	"errors"
-	"log"
+	"fmt"
 
-	"github.com/snowmerak/twisted-lyfes/net/port"
 	"gitlab.com/NebulousLabs/go-upnp"
 )
 
 type UPnP struct {
-	d *upnp.IGD
-	p uint16
+	d     *upnp.IGD
+	Ports map[uint16]string
 }
 
 func New(ctx context.Context) (*UPnP, error) {
 	u := new(UPnP)
-
-	p := port.MIN
+	u.Ports = make(map[uint16]string)
 
 	d, err := upnp.DiscoverCtx(ctx)
 	if err != nil {
-		return nil, err
-	}
-
-	for {
-		if err := d.Forward(p, "peer2peer"); err != nil {
-			p++
-			if p > port.MAX {
-				return nil, errors.New("no avaliable port")
-			}
-			continue
-		}
-		if port.IsAvaliable(p) {
-			break
-		}
+		return nil, fmt.Errorf("upnp.New: %w", err)
 	}
 
 	u.d = d
-	u.p = p
 
 	return u, nil
 }
 
-func (u *UPnP) Clear() error {
-	if err := u.d.Clear(u.p); err != nil {
-		return err
+func (u *UPnP) Forward(port uint16, desc string) error {
+	if _, ok := u.Ports[port]; ok {
+		return fmt.Errorf("upnp.Forward: port %d is already forwarded", port)
 	}
-	log.Printf("Cleared port %d\n", u.p)
+	if err := u.d.Forward(port, desc); err != nil {
+		return fmt.Errorf("upnp.Forward: %w", err)
+	}
+	u.Ports[port] = desc
 	return nil
 }
 
-func (u *UPnP) Port() uint16 {
-	return u.p
+func (u *UPnP) Clear() error {
+	for k := range u.Ports {
+		if err := u.d.Clear(k); err != nil {
+			return fmt.Errorf("upnp.Clear: %w", err)
+		}
+	}
+	return nil
+}
+
+func (u *UPnP) ExternalIP() (string, error) {
+	return u.d.ExternalIP()
 }
