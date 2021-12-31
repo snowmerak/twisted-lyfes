@@ -7,17 +7,21 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/snowmerak/generics-for-go/option"
 	"github.com/snowmerak/twisted-lyfes/net/ip"
 	"github.com/snowmerak/twisted-lyfes/net/port"
 )
 
 type Setting struct {
-	Port      int
-	Limit     int
-	LimitTime time.Duration
+	Port      *option.Option[int]
+	Limit     *option.Option[int]
+	LimitTime *option.Option[time.Duration]
 }
 
 func ScanPort(ip net.IP, port int, limit time.Duration) (bool, error) {
+	if ip == nil {
+		return false, fmt.Errorf("discovery.ScanPort: ip is nil")
+	}
 	conn, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%d", ip.String(), port), limit)
 	if err != nil {
 		return false, fmt.Errorf("discovery.ScanPort: %w", err)
@@ -31,14 +35,10 @@ type Pair struct {
 	Remote net.IP
 }
 
-func Do(setting *Setting) ([]Pair, error) {
-	if setting == nil {
-		setting = &Setting{
-			Port:      port.PORT + 1,
-			Limit:     3,
-			LimitTime: time.Millisecond * 20,
-		}
-	}
+func Do(setting Setting) ([]Pair, error) {
+	port := setting.Port.UnwrapOr(port.PORT + 1)
+	limit := setting.Limit.UnwrapOr(3)
+	limitTime := setting.LimitTime.UnwrapOr(time.Millisecond * 20)
 
 	localIPs, err := ip.GetLocalIPs()
 	if err != nil {
@@ -58,7 +58,7 @@ func Do(setting *Setting) ([]Pair, error) {
 				if i.Equal(f) {
 					return
 				}
-				b, err := ScanPort(f, setting.Port, setting.LimitTime)
+				b, err := ScanPort(f, port, limitTime)
 				if err != nil {
 					return
 				}
@@ -69,7 +69,7 @@ func Do(setting *Setting) ([]Pair, error) {
 					})
 				}
 			}()
-			if len(addresses) >= setting.Limit {
+			if len(addresses) >= limit {
 				return addresses, nil
 			}
 			n, err := ip.GetNextIP(f)
@@ -83,14 +83,10 @@ func Do(setting *Setting) ([]Pair, error) {
 	return addresses, nil
 }
 
-func Listen(setting *Setting) error {
-	if setting == nil {
-		setting = &Setting{
-			Port: port.PORT + 1,
-		}
-	}
+func Listen(setting Setting) error {
+	port := setting.Port.UnwrapOr(port.PORT + 1)
 
-	tcp, err := net.Listen("tcp", ":"+strconv.Itoa(setting.Port))
+	tcp, err := net.Listen("tcp", ":"+strconv.Itoa(port))
 	if err != nil {
 		return fmt.Errorf("discovery.Listen: %w", err)
 	}
