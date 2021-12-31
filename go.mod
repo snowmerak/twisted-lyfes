@@ -6,6 +6,7 @@ require (
 	github.com/cloudflare/circl v1.1.0
 	github.com/jackpal/gateway v1.0.7
 	github.com/jackpal/go-nat-pmp v1.0.2
+	github.com/snowmerak/generics-for-go v1.3.2
 	gitlab.com/NebulousLabs/go-upnp v0.0.0-20211002182029-11da932010b6
 )
 
