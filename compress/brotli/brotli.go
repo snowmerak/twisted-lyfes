@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/andybalholm/brotli"
+	"github.com/snowmerak/generics-for-go/option"
 	"github.com/snowmerak/twisted-lyfes/compress"
 )
 
@@ -17,13 +18,9 @@ func New() compress.Compressor {
 // WriteBrotli has default parameter named level
 // default level is 6
 // you can change level by passing setting parameter implemented by compress.Level interface
-func (b Brotli) Write(data []byte, buf io.Writer, setting interface{}) error {
-	level := brotli.DefaultCompression
-	switch set := setting.(type) {
-	case compress.Level:
-		level = set.Level()
-	}
-	brt := brotli.NewWriterLevel(buf, level)
+func (b Brotli) Write(data []byte, buf io.Writer, level *option.Option[int]) error {
+	lv := level.UnwrapOr(brotli.DefaultCompression)
+	brt := brotli.NewWriterLevel(buf, lv)
 	if _, err := brt.Write(data); err != nil {
 		return err
 	}

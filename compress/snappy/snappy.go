@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/golang/snappy"
+	"github.com/snowmerak/generics-for-go/option"
 	"github.com/snowmerak/twisted-lyfes/compress"
 )
 
@@ -14,7 +15,7 @@ func New() compress.Compressor {
 	return Snappy{}
 }
 
-func (s Snappy) Write(data []byte, writer io.Writer, _ interface{}) error {
+func (s Snappy) Write(data []byte, writer io.Writer, level *option.Option[int]) error {
 	w := snappy.NewBufferedWriter(writer)
 	if _, err := w.Write(data); err != nil {
 		return err

@@ -3,6 +3,7 @@ package compress
 import (
 	"io"
 
+	"github.com/snowmerak/generics-for-go/option"
 	"github.com/snowmerak/twisted-lyfes/compress"
 	"github.com/ulikunitz/xz/lzma"
 )
@@ -13,7 +14,7 @@ func New() compress.Compressor {
 	return LZMA2{}
 }
 
-func (l LZMA2) Write(data []byte, buf io.Writer, _ interface{}) error {
+func (l LZMA2) Write(data []byte, buf io.Writer, level *option.Option[int]) error {
 	w, err := lzma.NewWriter2(buf)
 	if err != nil {
 		return err
