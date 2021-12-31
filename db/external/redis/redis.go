@@ -17,7 +17,7 @@ type RedisDB struct {
 func Connect(url string, port int, password string) external.KVCache {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     url + ":" + strconv.Itoa(port),
-		Password: "",
+		Password: password,
 		DB:       0,
 	})
 
