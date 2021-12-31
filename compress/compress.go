@@ -1,12 +1,23 @@
 package compress
 
-import "io"
+import (
+	"io"
 
-type Level interface {
-	Level() int
+	"github.com/snowmerak/generics-for-go/option"
+)
+
+type WriteParameter struct {
+	Data   []byte
+	Writer io.Writer
+	Level  *option.Option[int]
+}
+
+type ReadParameter struct {
+	Reader io.Reader
+	Writer io.Writer
 }
 
 type Compressor interface {
-	Write(data []byte, buf io.Writer, setting interface{}) error
-	Read(reader io.Reader, writer io.Writer) error
+	Write(param WriteParameter) (io.Writer, error)
+	Read(param ReadParameter) (io.Writer, error)
 }

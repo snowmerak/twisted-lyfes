@@ -13,24 +13,24 @@ func New() compress.Compressor {
 	return LZMA2{}
 }
 
-func (l LZMA2) Write(data []byte, buf io.Writer, _ interface{}) error {
-	w, err := lzma.NewWriter2(buf)
+func (l LZMA2) Write(param compress.WriteParameter) (io.Writer, error) {
+	w, err := lzma.NewWriter2(param.Writer)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	if _, err := w.Write(data); err != nil {
-		return err
+	if _, err := w.Write(param.Data); err != nil {
+		return nil, err
 	}
 	if err := w.Close(); err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return param.Writer, nil
 }
 
-func (l LZMA2) Read(reader io.Reader, writer io.Writer) error {
-	r, err := lzma.NewReader2(reader)
+func (l LZMA2) Read(param compress.ReadParameter) (io.Writer, error) {
+	r, err := lzma.NewReader2(param.Reader)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	temp := make([]byte, 4096)
 	for !r.EOS() {
@@ -39,9 +39,9 @@ func (l LZMA2) Read(reader io.Reader, writer io.Writer) error {
 			if err.Error() == "EOF" {
 				break
 			}
-			return err
+			return nil, err
 		}
-		writer.Write(temp[:n])
+		param.Writer.Write(temp[:n])
 	}
-	return nil
+	return param.Writer, nil
 }
