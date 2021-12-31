@@ -1,6 +1,7 @@
 package compress
 
 import (
+	"bytes"
 	"io"
 
 	"github.com/andybalholm/brotli"
@@ -16,23 +17,28 @@ func New() compress.Compressor {
 // WriteBrotli has default parameter named level
 // default level is 6
 // you can change level by passing setting parameter implemented by compress.Level interface
-func (b Brotli) Write(param compress.WriteParameter) (io.Writer, error) {
-	level := param.Level.UnwrapOr(brotli.DefaultCompression)
-	brt := brotli.NewWriterLevel(param.Writer, level)
-	if _, err := brt.Write(param.Data); err != nil {
-		return nil, err
+func (b Brotli) Write(data []byte, buf io.Writer, setting interface{}) error {
+	level := brotli.DefaultCompression
+	switch set := setting.(type) {
+	case compress.Level:
+		level = set.Level()
+	}
+	brt := brotli.NewWriterLevel(buf, level)
+	if _, err := brt.Write(data); err != nil {
+		return err
 	}
 	if err := brt.Flush(); err != nil {
-		return nil, err
+		return err
 	}
 	if err := brt.Close(); err != nil {
-		return nil, err
+		return err
 	}
-	return param.Writer, nil
+	return nil
 }
 
-func (b Brotli) Read(param compress.ReadParameter) (io.Writer, error) {
-	brt := brotli.NewReader(param.Reader)
+func (b Brotli) Read(reader io.Reader, writer io.Writer) error {
+	brt := brotli.NewReader(reader)
+	buf := bytes.NewBuffer(nil)
 	temp := make([]byte, 4096)
 	for {
 		n, err := brt.Read(temp)
@@ -40,12 +46,12 @@ func (b Brotli) Read(param compress.ReadParameter) (io.Writer, error) {
 			if err.Error() == "EOF" {
 				break
 			}
-			return nil, err
+			return err
 		}
 		if n == 0 {
 			break
 		}
-		param.Writer.Write(temp[:n])
+		buf.Write(temp[:n])
 	}
-	return param.Writer, nil
+	return nil
 }

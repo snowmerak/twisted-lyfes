@@ -1,6 +1,7 @@
 package compress
 
 import (
+	"bytes"
 	"io"
 
 	"github.com/golang/snappy"
@@ -13,35 +14,36 @@ func New() compress.Compressor {
 	return Snappy{}
 }
 
-func (s Snappy) Write(param compress.WriteParameter) (io.Writer, error) {
-	w := snappy.NewBufferedWriter(param.Writer)
-	if _, err := w.Write(param.Data); err != nil {
-		return nil, err
+func (s Snappy) Write(data []byte, writer io.Writer, _ interface{}) error {
+	w := snappy.NewBufferedWriter(writer)
+	if _, err := w.Write(data); err != nil {
+		return err
 	}
 	if err := w.Flush(); err != nil {
-		return nil, err
+		return err
 	}
 	if err := w.Close(); err != nil {
-		return nil, err
+		return err
 	}
-	return param.Writer, nil
+	return nil
 }
 
-func (s Snappy) Read(param compress.ReadParameter) (io.Writer, error) {
-	r := snappy.NewReader(param.Reader)
+func (s Snappy) Read(reader io.Reader, writer io.Writer) error {
+	r := snappy.NewReader(reader)
 	temp := make([]byte, 4096)
+	buf := bytes.NewBuffer(nil)
 	for {
 		n, err := r.Read(temp)
 		if err != nil {
 			if err.Error() == "EOF" {
 				break
 			}
-			return nil, err
+			return err
 		}
 		if n == 0 {
 			break
 		}
-		param.Writer.Write(temp[:n])
+		buf.Write(temp[:n])
 	}
-	return param.Writer, nil
+	return nil
 }
