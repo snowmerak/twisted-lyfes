@@ -161,7 +161,7 @@ func (fs *FSys) CombinePartsTo(writer io.Writer, metaData *MetaData) error {
 		if err != nil {
 			return err
 		}
-		if len(data) > n {
+		if len(partition.Data) > n {
 			return ErrBufferFull
 		}
 	}
@@ -176,7 +176,7 @@ func (fs *FSys) Delete(name string) error {
 	return nil
 }
 
-func (fs *FSys) Bring(path string) error {
+func (fs *FSys) Import(path string) error {
 	name := filepath.Base(path)
 
 	metaData := new(MetaData)
@@ -185,6 +185,10 @@ func (fs *FSys) Bring(path string) error {
 
 	f, err := os.Open(path)
 	if err != nil {
+		return err
+	}
+
+	if err := os.MkdirAll(filepath.Join(fs.basePath, name), 0o775); err != nil {
 		return err
 	}
 
@@ -213,6 +217,28 @@ func (fs *FSys) Bring(path string) error {
 	}
 
 	if err := fs.PutMetaData(metaData); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (fs *FSys) Export(targetPath, name string) error {
+	metaData, err := fs.GetMetaData(name)
+	if err != nil {
+		return err
+	}
+
+	if err := os.MkdirAll(targetPath, 0o775); err != nil {
+		return err
+	}
+
+	f, err := os.Create(filepath.Join(targetPath, name))
+	if err != nil {
+		return err
+	}
+
+	if err := fs.CombinePartsTo(f, metaData); err != nil {
 		return err
 	}
 
