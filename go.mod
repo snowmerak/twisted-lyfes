@@ -17,6 +17,8 @@ require (
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/dgraph-io/ristretto v0.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+	github.com/dolthub/maphash v0.0.0-20221220182448-74e1e1ea1577 // indirect
+	github.com/dolthub/swiss v0.1.0 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect
@@ -24,6 +26,7 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/flatbuffers v1.12.1 // indirect
 	github.com/klauspost/compress v1.13.4 // indirect
+	github.com/lemon-mint/go-datastructures v1.1.0 // indirect
 	github.com/nats-io/nats-server/v2 v2.6.6 // indirect
 	github.com/nats-io/nkeys v0.3.0 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
