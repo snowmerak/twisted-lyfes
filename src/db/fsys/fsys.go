@@ -22,7 +22,7 @@ func New(basePath string, hashFunc func([]byte) []byte, stringEncoder func([]byt
 		basePath:      basePath,
 		hashFunc:      hashFunc,
 		stringEncoder: stringEncoder,
-		chunkSize:     1024 * 1024,
+		chunkSize:     1024 * 1024 * 4,
 	}
 }
 
