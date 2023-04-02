@@ -33,7 +33,7 @@ func GetFree() (uint16, error) {
 	return uint16(port), nil
 }
 
-func IsAvaliable(port uint16) bool {
+func IsAvailable(port uint16) bool {
 	conn, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	if err != nil {
 		return false
