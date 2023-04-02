@@ -1,7 +1,6 @@
 package db
 
 import (
-	"github.com/snowmerak/twisted-lyfes/db/embedded"
 	"github.com/xujiajun/nutsdb"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -11,7 +10,7 @@ type DB struct {
 	db *nutsdb.DB
 }
 
-func New(path string) (embedded.EmbeddedDB, error) {
+func New(path string) (*DB, error) {
 	opt := nutsdb.DefaultOptions
 	opt.Dir = path
 	db, err := nutsdb.Open(opt)
@@ -56,6 +55,8 @@ func (db *DB) Get(subject string, key string, value protoreflect.ProtoMessage) (
 	if err != nil {
 		return nil, err
 	}
-	proto.Unmarshal(data, value)
+	if err := proto.Unmarshal(data, value); err != nil {
+		return nil, err
+	}
 	return value, nil
 }
