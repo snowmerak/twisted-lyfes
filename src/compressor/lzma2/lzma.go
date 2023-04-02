@@ -4,13 +4,12 @@ import (
 	"io"
 
 	"github.com/snowmerak/generics-for-go/option"
-	"github.com/snowmerak/twisted-lyfes/compress"
 	"github.com/ulikunitz/xz/lzma"
 )
 
 type LZMA2 struct{}
 
-func New() compress.Compressor {
+func New() LZMA2 {
 	return LZMA2{}
 }
 

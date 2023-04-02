@@ -6,12 +6,11 @@ import (
 
 	"github.com/golang/snappy"
 	"github.com/snowmerak/generics-for-go/option"
-	"github.com/snowmerak/twisted-lyfes/compress"
 )
 
 type Snappy struct{}
 
-func New() compress.Compressor {
+func New() Snappy {
 	return Snappy{}
 }
 

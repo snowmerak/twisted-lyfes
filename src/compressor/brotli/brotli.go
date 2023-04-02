@@ -6,12 +6,11 @@ import (
 
 	"github.com/andybalholm/brotli"
 	"github.com/snowmerak/generics-for-go/option"
-	"github.com/snowmerak/twisted-lyfes/compress"
 )
 
 type Brotli struct{}
 
-func New() compress.Compressor {
+func New() Brotli {
 	return Brotli{}
 }
 
