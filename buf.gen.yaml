@@ -5,8 +5,8 @@ managed:
     default: github.com/bufbuild/buf-tour/gen
 plugins:
   - plugin: buf.build/protocolbuffers/go
-    out: model
+    out: src/model
     opt: paths=source_relative
   - plugin: buf.build/grpc/go
-    out: model
+    out: src/service
     opt: paths=source_relative
