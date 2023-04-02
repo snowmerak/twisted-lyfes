@@ -7,3 +7,9 @@ message MetaData {
   int64 timestamp = 2;
   repeated string partitions = 3;
 }
+
+message Partition {
+  string key = 1;
+  int64 lastUpdated = 2;
+  bytes data = 3;
+}
