@@ -4,9 +4,9 @@ import (
 	"crypto/rand"
 	"errors"
 	"fmt"
+	"github.com/snowmerak/twisted-lyfes/src/crypto/dh"
 
 	"github.com/cloudflare/circl/dh/sidh"
-	"github.com/snowmerak/twisted-lyfes/crypto/dh"
 )
 
 const (

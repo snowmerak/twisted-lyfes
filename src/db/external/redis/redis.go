@@ -2,9 +2,8 @@ package redis
 
 import (
 	"context"
+	"github.com/snowmerak/twisted-lyfes/src/db/external"
 	"strconv"
-
-	"github.com/snowmerak/twisted-lyfes/db/external"
 
 	"github.com/go-redis/redis/v8"
 )

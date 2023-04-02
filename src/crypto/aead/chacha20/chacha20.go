@@ -2,8 +2,8 @@ package chacha20
 
 import (
 	"crypto/cipher"
+	"github.com/snowmerak/twisted-lyfes/src/crypto/aead"
 
-	"github.com/snowmerak/twisted-lyfes/crypto/aead"
 	"golang.org/x/crypto/blake2b"
 	"golang.org/x/crypto/chacha20poly1305"
 )

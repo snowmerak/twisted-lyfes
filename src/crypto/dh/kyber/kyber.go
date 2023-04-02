@@ -3,9 +3,9 @@ package kyber
 import (
 	"crypto/rand"
 	"fmt"
+	"github.com/snowmerak/twisted-lyfes/src/crypto/dh"
 
 	"github.com/cloudflare/circl/kem/kyber/kyber1024"
-	"github.com/snowmerak/twisted-lyfes/crypto/dh"
 )
 
 type KeyPair struct {

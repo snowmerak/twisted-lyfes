@@ -2,7 +2,7 @@ package nats
 
 import (
 	nats "github.com/nats-io/nats.go"
-	"github.com/snowmerak/twisted-lyfes/mq"
+	"github.com/snowmerak/twisted-lyfes/src/mq"
 )
 
 type Connection struct {

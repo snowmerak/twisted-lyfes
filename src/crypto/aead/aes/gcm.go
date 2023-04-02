@@ -4,8 +4,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/sha256"
-
-	"github.com/snowmerak/twisted-lyfes/crypto/aead"
+	"github.com/snowmerak/twisted-lyfes/src/crypto/aead"
 )
 
 type GCM struct {

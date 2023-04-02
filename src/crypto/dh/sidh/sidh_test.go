@@ -2,9 +2,8 @@ package sidh_test
 
 import (
 	"bytes"
+	"github.com/snowmerak/twisted-lyfes/src/crypto/dh/sidh"
 	"testing"
-
-	"github.com/snowmerak/twisted-lyfes/crypto/dh/sidh"
 )
 
 func TestKeyExchangeA(t *testing.T) {

@@ -2,9 +2,8 @@ package kyber_test
 
 import (
 	"bytes"
+	"github.com/snowmerak/twisted-lyfes/src/crypto/dh/kyber"
 	"testing"
-
-	"github.com/snowmerak/twisted-lyfes/crypto/dh/kyber"
 )
 
 func TestKeyExchange(t *testing.T) {
