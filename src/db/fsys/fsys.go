@@ -332,3 +332,22 @@ func (fs *FSys) Export(targetPath, name string) error {
 
 	return nil
 }
+
+func (fs *FSys) GetExistsMetaDataList() []string {
+	files, err := os.ReadDir(fs.basePath)
+	if err != nil {
+		return nil
+	}
+
+	exists := []string(nil)
+	for _, file := range files {
+		if file.IsDir() {
+			if _, err := os.Stat(filepath.Join(fs.basePath, file.Name(), MetaDataFileName)); os.IsNotExist(err) {
+				continue
+			}
+			exists = append(exists, file.Name())
+		}
+	}
+
+	return exists
+}
