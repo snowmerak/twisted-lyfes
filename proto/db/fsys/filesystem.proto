@@ -5,7 +5,8 @@ option go_package = "./model/fsys";
 message MetaData {
   string name = 1;
   int64 timestamp = 2;
-  repeated string partitions = 3;
+  string targetPath = 3;
+  repeated string partitions = 4;
 }
 
 message Partition {

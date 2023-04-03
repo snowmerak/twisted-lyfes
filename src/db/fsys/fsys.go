@@ -46,6 +46,10 @@ func (fs *FSys) PutMetaData(metaData *MetaData) error {
 		return err
 	}
 
+	if err := os.MkdirAll(filepath.Join(fs.basePath, metaData.Name), 0o775); err != nil {
+		return err
+	}
+
 	if err := os.WriteFile(filepath.Join(fs.basePath, metaData.Name, MetaDataFileName), data, 0o775); err != nil {
 		return err
 	}
@@ -62,6 +66,51 @@ func (fs *FSys) GetPartition(name, part string) (*Partition, error) {
 	partition := new(Partition)
 	if err := proto.Unmarshal(data, partition); err != nil {
 		return nil, err
+	}
+
+	return partition, nil
+}
+
+func (fs *FSys) GetPartitionFromFile(name, part string) (*Partition, error) {
+	metaData, err := fs.GetMetaData(name)
+	if err != nil {
+		return nil, err
+	}
+
+	sequence := 0
+	for _, p := range metaData.Partitions {
+		if p == part {
+			break
+		}
+
+		sequence++
+	}
+
+	if sequence >= len(metaData.Partitions) {
+		return nil, ErrPartitionNotFound
+	}
+
+	partition := new(Partition)
+	partition.Key = part
+	partition.LastUpdated = metaData.Timestamp
+
+	f, err := os.Open(metaData.TargetPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := f.Seek(int64(sequence*fs.chunkSize), io.SeekStart); err != nil {
+		return nil, err
+	}
+
+	partition.Data = make([]byte, fs.chunkSize)
+	if _, err := f.Read(partition.Data); err != nil {
+		return nil, err
+	}
+
+	hashedKey := fs.makePartKey(partition.Data)
+	if hashedKey != part {
+		return nil, ErrPartitionKeyDisMatch
 	}
 
 	return partition, nil
@@ -176,12 +225,13 @@ func (fs *FSys) Delete(name string) error {
 	return nil
 }
 
-func (fs *FSys) Import(path string) error {
+func (fs *FSys) ImportIntoPartitions(path string) error {
 	name := filepath.Base(path)
 
 	metaData := new(MetaData)
 	metaData.Name = name
 	metaData.Timestamp = time.Now().Unix()
+	metaData.TargetPath = path
 
 	f, err := os.Open(path)
 	if err != nil {
@@ -223,6 +273,39 @@ func (fs *FSys) Import(path string) error {
 	return nil
 }
 
+func (fs *FSys) Import(targetPath string) error {
+	metaData := new(MetaData)
+	metaData.Name = filepath.Base(targetPath)
+	metaData.Timestamp = time.Now().Unix()
+	metaData.TargetPath = targetPath
+
+	chunk := make([]byte, fs.chunkSize)
+	f, err := os.Open(targetPath)
+	if err != nil {
+		return err
+	}
+
+	for {
+		n, err := f.Read(chunk)
+		if n == 0 && errors.Is(err, io.EOF) {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		key := fs.makePartKey(chunk)
+
+		metaData.Partitions = append(metaData.Partitions, key)
+	}
+
+	if err := fs.PutMetaData(metaData); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (fs *FSys) Export(targetPath, name string) error {
 	metaData, err := fs.GetMetaData(name)
 	if err != nil {
@@ -239,6 +322,11 @@ func (fs *FSys) Export(targetPath, name string) error {
 	}
 
 	if err := fs.CombinePartsTo(f, metaData); err != nil {
+		return err
+	}
+
+	metaData.TargetPath = targetPath
+	if err := fs.PutMetaData(metaData); err != nil {
 		return err
 	}
 
