@@ -2,38 +2,34 @@ package redis
 
 import (
 	"context"
-	"github.com/snowmerak/twisted-lyfes/src/db/external"
-	"strconv"
-
-	"github.com/go-redis/redis/v8"
+	"github.com/rueian/rueidis"
 )
 
-type RedisDB struct {
-	rdb *redis.Client
-	ctx context.Context
+type Client struct {
+	client rueidis.Client
+
+	ctx    context.Context
+	cancel context.CancelFunc
 }
 
-func Connect(url string, port int, password string) external.KVCache {
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     url + ":" + strconv.Itoa(port),
-		Password: password,
-		DB:       0,
+func NewClient(ctx context.Context, addr ...string) (*Client, error) {
+	c, err := rueidis.NewClient(rueidis.ClientOption{
+		InitAddress: addr,
 	})
-
-	return &RedisDB{rdb: rdb, ctx: context.Background()}
-}
-
-func (r *RedisDB) Set(id, url string) error {
-	if err := r.rdb.SetNX(r.ctx, id, url, 0).Err(); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (r *RedisDB) Get(id string) (string, error) {
-	url, err := r.rdb.Get(r.ctx, id).Result()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return url, nil
+
+	ctx, cancel := context.WithCancel(ctx)
+
+	return &Client{
+		client: c,
+		ctx:    ctx,
+		cancel: cancel,
+	}, nil
+}
+
+func (c *Client) Close() {
+	c.cancel()
+	c.client.Close()
 }
